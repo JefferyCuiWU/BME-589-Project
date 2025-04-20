@@ -1,106 +1,77 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr  8 18:21:58 2025
-
-@author: cjj18
-"""
-
 import os
-import pydicom
+from pathlib import Path
+
 import numpy as np
-import matplotlib.pyplot as plt
+import pydicom
 
-def load_ct_series_with_rescale(folder_path):
-    """
-    Load a series of CT DICOM images from a folder, sort them, convert to a 3D volume,
-    and apply RescaleSlope and RescaleIntercept to convert to Hounsfield Units (HU).
+# -----------------------------------------------------------------------------
+# Configuration
+# -----------------------------------------------------------------------------
 
-    Parameters:
-        folder_path (str): Path to the folder containing CT DICOM files.
+INPUT_BASE = Path("CT_data")       # folder holding CT0 … CT9 with DICOMs
+OUTPUT_BASE = Path("axial_npy")     # where .npy slices will be written
+PATIENTS = [f"CT{i}" for i in range(10)]
 
-    Returns:
-        volume_hu (np.ndarray): A 3D NumPy array (slices, height, width) in Hounsfield Units.
-    """
-    dicom_files = [
-        os.path.join(folder_path, f)
-        for f in os.listdir(folder_path)
-        if f.lower().endswith(".dcm")
-    ]
+# -----------------------------------------------------------------------------
+# DICOM → volume helper
+# -----------------------------------------------------------------------------
 
-    # Read and sort slices
+def load_ct_series_with_rescale(folder_path: Path) -> np.ndarray:
+    """Return 3‑D volume (Z,Y,X) in Hounsfield Units from a DICOM series."""
+    dicom_files = sorted(folder_path.glob("*.dcm"))
+    if not dicom_files:
+        raise FileNotFoundError(f"no DICOM files in {folder_path}")
+
     slices = []
-    for file in dicom_files:
-        ds = pydicom.dcmread(file)
-        if hasattr(ds, 'InstanceNumber'):
+    for dcm_path in dicom_files:
+        ds = pydicom.dcmread(dcm_path)
+        if hasattr(ds, "InstanceNumber"):
             slices.append((ds.InstanceNumber, ds))
         else:
-            print(f"Warning: Skipping {file} (no InstanceNumber)")
+            print(f"[WARN] {dcm_path.name} missing InstanceNumber – skipped")
 
-    # Sort slices by InstanceNumber
-    slices.sort(key=lambda x: x[0])
-    sorted_datasets = [s[1] for s in slices]
+    if not slices:
+        raise ValueError(f"no valid slices in {folder_path}")
 
-    # Stack the slices into a 3D array
-    pixel_arrays = [ds.pixel_array.astype(np.int16) for ds in sorted_datasets]
-    volume = np.stack(pixel_arrays, axis=0)
+    slices.sort(key=lambda t: t[0])
+    datasets = [t[1] for t in slices]
 
-    # Apply rescaling
-    rescale_slope = float(sorted_datasets[0].RescaleSlope)
-    rescale_intercept = float(sorted_datasets[0].RescaleIntercept)
+    volume = np.stack([ds.pixel_array.astype(np.int16) for ds in datasets], axis=0)
+    slope = float(datasets[0].RescaleSlope)
+    intercept = float(datasets[0].RescaleIntercept)
 
-    volume_hu = rescale_slope * volume + rescale_intercept
+    return slope * volume + intercept  # HU
 
-    return volume_hu
+# -----------------------------------------------------------------------------
+# Main routine
+# -----------------------------------------------------------------------------
 
-# Load volume (already rescaled to Hounsfield Units)
-ct_folder = "CT_data/CT9"
-ct_volume = load_ct_series_with_rescale(ct_folder)
+def main():
+    OUTPUT_BASE.mkdir(exist_ok=True)
 
-# ct_volume shape: (num_slices, height, width) → (Z, Y, X)
-print("Volume shape (Z, Y, X):", ct_volume.shape)
+    for patient in PATIENTS:
+        in_dir = INPUT_BASE / patient
+        if not in_dir.is_dir():
+            print(f"[WARN] missing {in_dir}; skipping")
+            continue
 
-# Get the central sagittal slice (middle along X-axis)
-sagittal_index = ct_volume.shape[2] // 2  # Middle of width (X-axis)
-sagittal_slice = ct_volume[:, :, sagittal_index]  # Shape: (Z, Y)
+        try:
+            vol = load_ct_series_with_rescale(in_dir)
+        except Exception as e:
+            print(f"[ERROR] {patient}: {e}")
+            continue
+
+        z_dim, y_dim, x_dim = vol.shape
+        out_dir = OUTPUT_BASE / patient
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        print(f"{patient}: saving {z_dim} axial slices → {out_dir}")
+        for z in range(z_dim):
+            axial = vol[z, :, :]             # shape (Y, X)
+            np.save(out_dir / f"ax_{z:03d}.npy", axial)
+
+    print("Done.")
 
 
-# Plot the sagittal slice
-plt.figure(figsize=(6, 8))
-plt.imshow(sagittal_slice, cmap='gray')
-plt.title(f"Central Sagittal Slice (index={sagittal_index})")
-plt.xlabel("Slice (Z-axis)")
-plt.ylabel("Vertical (Y-axis)")
-plt.colorbar(label="Hounsfield Units (HU)")
-plt.axis('on')
-plt.tight_layout()
-plt.show()
-
-# Extract the central Y-index
-coronal_index = ct_volume.shape[1] // 2  # Middle along Y-axis (rows)
-coronal_slice = ct_volume[:, coronal_index, :]  # Shape: (Z, X)
-
-# Plot it
-plt.figure(figsize=(6, 8))
-plt.imshow(coronal_slice, cmap='gray')
-plt.title(f"Central Coronal Slice (Y-index={coronal_index})")
-plt.xlabel("Slice (Z-axis)")
-plt.ylabel("Width (X-axis)")
-plt.colorbar(label="Hounsfield Units (HU)")
-plt.axis("on")
-plt.tight_layout()
-plt.show()
-
-# Get the middle slice along the Z-axis
-axial_index = ct_volume.shape[0] // 2  # Middle of slice stack
-axial_slice = ct_volume[axial_index, :, :]
-
-# Plot it
-plt.figure(figsize=(6, 6))
-plt.imshow(axial_slice, cmap='gray')
-plt.title(f"Central Axial Slice (Z-index={axial_index})")
-plt.xlabel("X (width)")
-plt.ylabel("Y (height)")
-plt.colorbar(label="Hounsfield Units (HU)")
-plt.axis("on")
-plt.tight_layout()
-plt.show()
+if __name__ == "__main__":
+    main()
