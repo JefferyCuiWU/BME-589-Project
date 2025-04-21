@@ -12,7 +12,11 @@ We randomly selected 10 patients from this dataset and randomly selected one CT 
 
 ### CLIPDenoising
 
+Access their GitHub Repo at [CLIPDenoising](https://github.com/alwaysuu/CLIPDenoising), and their paper at [Transfer CLIP for Generalizable Image Denoising](https://arxiv.org/html/2403.15132v1).
+
 ### CoreDiff
+
+Access their GitHub Repo at [CoreDiff](https://github.com/qgao21/CoreDiff), and their paper at [CoreDiff: Contextual Error-Modulated Generalized Diffusion Model for Low-Dose CT Denoising and Generalization](https://arxiv.org/abs/2304.01814).
 
 ### CNN10
 
