@@ -24,7 +24,7 @@ Access their GitHub Repo at [CoreDiff](https://github.com/qgao21/CoreDiff), and 
 
 ### Residual $\sigma$
 Residual σ measures how much variance the denoiser removes by computing the standard deviation of the residual image $x - y$, where $x$ is the original slice and $y$ is the denoised slice.  In practice we calculate  
-$$\displaystyle σ_{\text{res}} = \sqrt{\frac{1}{N}\sum_{i=1}^N\bigl((x_i - y_i) - \xoverline{x-y}\bigr)^2}$$.  
+$$\displaystyle σ_{\text{res}} = \sqrt{\frac{1}{N}\sum_{i=1}^N\bigl((x_i - y_i) - \overline{x-y}\bigr)^2}$$.  
 On an 8‑bit CT window (0–255) values from about 0–10 HU mean almost no noise was removed, while 20–60 HU indicates substantial noise suppression.  Higher σ₍res₎ is better—provided edge preservation metrics remain within acceptable bounds.
 
 ### NRR  
