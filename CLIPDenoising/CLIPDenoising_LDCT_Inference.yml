@@ -1,0 +1,69 @@
+# CLIPDenoising Inference for LDCT
+name: CLIPDenoising_LDCT_Inference
+model_type: ImageCleanModel
+scale: 1
+num_gpu: 1  # set to 0 for CPU
+manual_seed: 100
+
+datasets:
+  val:
+    name: LDCT
+    type: Dataset_CTDenoising
+    in_ch: 1
+    io_backend:
+      type: disk
+    dataroot_gt: inputs/LDCT  # Your PNG slices are here
+    # Remove test_patient and training-related entries
+
+network_g:
+  type: CLIPDenoising
+  inp_channels: 1
+  out_channels: 1
+  depth: 5
+  wf: 64
+  num_blocks: [3, 4, 6, 3]
+  bias: false
+  model_path: experiments/pretrained_models/CLIPDenoising_LDCTDenoising_GaussianSigma5.pth
+  aug_level: 0.025
+
+path:
+  pretrain_network_g: experiments/pretrained_models/CLIPDenoising_LDCTDenoising_GaussianSigma5.pth
+  results_root: results/CLIPDenoising_LDCT
+  strict_load_g: true
+  resume_state: ~
+
+val:
+  window_size: 32
+  val_freq: 1
+  save_img: true
+  rgb2bgr: false
+  use_image: true
+  max_minibatch: 8
+
+  metrics:
+    psnr:
+      type: compute_PSNR
+      data_range: 4096
+      trunc_min: -1024
+      trunc_max: 3072
+      norm_range_min: -1024
+      norm_range_max: 3072
+    ssim:
+      type: compute_SSIM
+      data_range: 4096
+      trunc_min: -1024
+      trunc_max: 3072
+      norm_range_min: -1024
+      norm_range_max: 3072
+
+logger:
+  print_freq: 100
+  save_checkpoint_freq: 10000
+  use_tb_logger: false
+  wandb:
+    project: ~
+    resume_id: ~
+
+dist_params:
+  backend: nccl
+  port: 29500
