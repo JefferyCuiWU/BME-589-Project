@@ -14,6 +14,12 @@ We randomly selected 10 patients from this dataset and randomly selected one CT 
 
 Access their GitHub Repo at [CLIPDenoising](https://github.com/alwaysuu/CLIPDenoising), and their paper at [Transfer CLIP for Generalizable Image Denoising](https://arxiv.org/html/2403.15132v1).
 
+To run the model on our dataset, first make sure that you get their pre-trained model and put it under experiments/pretrained_models. Then, download [ResNet50](https://openaipublic.azureedge.net/clip/models/afeb0e10f9e5a86da6080e35cf09123aca3b358a0c3e3b6c78a7b63bc04b6762/RN50.pt), and place it under model_data/clip.
+
+Then, put [preprocessing.py](CLIPDenoising/preprocessing.py) and [run_ldct_inference.py](CLIPDenoising/run_ldct_inference.py) in the root directory of CLIPDenoising. Place [CLIPDenoising_LDCT_Inference.yml](CLIPDenoising/CLIPDenoising_LDCT_Inference.yml) under Denoising/Options. 
+
+To test the model, first run [preprocessing.py](CLIPDenoising/preprocessing.py), then run [run_ldct_inference.py](CLIPDenoising/run_ldct_inference.py)
+
 ### CoreDiff
 
 Access their GitHub Repo at [CoreDiff](https://github.com/qgao21/CoreDiff), and their paper at [CoreDiff: Contextual Error-Modulated Generalized Diffusion Model for Low-Dose CT Denoising and Generalization](https://arxiv.org/abs/2304.01814).
