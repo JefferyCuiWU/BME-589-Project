@@ -62,5 +62,6 @@ A value of 1 indicates perfect preservation of edge directions; values ≥ 0.9
 ### Usage Information
 
 In the [Metrics](Metrics) folder, we provide two scripts for metrics evaluation. They only differ from the input type. If you are evaluating results of models in HU unit and stored as 3D volumes, please use [metrics_HU_3D.py](Metrics/metrics_HU_3D.py). If you are evaluating results in (0,1) and stored as slices, please use [metrics_01_slice.py](Metrics/metrics_01_slice.py). The calculations for the metrics are the same.
+We also provide a script for plotting. We calculate the mean scores of each patient from CT0 to CT10 on each metric and further calculate the mean to compare the performance of each model on different metrics.
 
 We have saved the results of metrics evaluation in [Results](BME-589-Project/Metrics/Results/).
