@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 def read_data(file_name, method):
     df = pd.read_excel(file_name, sheet_name="Sheet1")
-    df = df[df["patient"].isin([f"CT{i}" for i in range(9)])]  # 筛选CT0-CT8
+    df = df[df["patient"].isin([f"CT{i}" for i in range(9)])]  
     df["Method"] = method
     return df[["patient", "sigma_res_mean", "NRR_mean", "AAG_ratio_mean", "L2_per_px_mean", "grad_cos_mean", "Method"]]
 
