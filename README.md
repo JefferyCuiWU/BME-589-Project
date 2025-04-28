@@ -33,6 +33,8 @@ To run the model, first run [preprocessing.py](CoreDiff/preprocessing.py), then 
 `python main.py --model_name corediff --run_name test --batch_size 4 --max_iter 150000 --test_dataset custom --test_batch_size 1 --dose 5 --mode test --test_iter 150000`
 
 ### CNN10
+CNN10 is a convolutional neural network algorithm for denoising low-dose CT scan images. The pretrained version of this model provided by at (https://github.com/eeulig/ldct-benchmark) and its paper at [paper] (https://pmc.ncbi.nlm.nih.gov/articles/PMC5330597/)
+To run this algorithm, first install ldct-benchmark (pip install ldct-benchmark) and then run pre_trained_model.ipynb.(CNN10/pre_trained_model)
 
 ## Evaluation Metrics
 
