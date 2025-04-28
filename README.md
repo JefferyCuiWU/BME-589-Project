@@ -34,7 +34,7 @@ To run the model, first run [preprocessing.py](CoreDiff/preprocessing.py), then 
 
 ### CNN10
 CNN10 is a convolutional neural network algorithm for denoising low-dose CT scan images. The pretrained version of this model provided by [ldct-benchmark](https://github.com/eeulig/ldct-benchmark) and its [paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC5330597/)
-To run this algorithm, [run pre_trained_model.ipynb] in [CNN10 folder](https://github.com/JefferyCuiWU/BME-589-Project/tree/main/CNN10). Before runing the code, make sure that the dataset and [preprocesssing.py]((CLIPDenoising/preprocessing.py) located in your google drive.
+To run this algorithm, [run pre_trained_model.ipynb](https://github.com/JefferyCuiWU/BME-589-Project/blob/main/CNN10/pre_trained_model.ipynb) in [CNN10 folder](https://github.com/JefferyCuiWU/BME-589-Project/tree/main/CNN10). Before runing the code, make sure that the dataset and [preprocesssing.py](CLIPDenoising/preprocessing.py) located in your google drive.
 ## Evaluation Metrics
 
 ### Residual $\sigma$
